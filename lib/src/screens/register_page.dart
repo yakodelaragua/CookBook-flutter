@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:factura/src/components/image_picker_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String password = "";
   String _errorMessage = "";
 
+  File imageFile = File("");
   bool _loading = false;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Widget build(BuildContext context) {
@@ -26,14 +29,11 @@ class _RegisterPageState extends State<RegisterPage> {
         key: _formKey, //para tener acceso
         child: Stack(
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 60),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [Colors.cyan[300]!, Colors.cyan[800]!])),
-                  
-            ),
+            ImagePickerWidget(imageFile: this.imageFile, onImageSelected: (File file) {
+              setState(() {
+                imageFile = file;
+              });
+            },),
             SizedBox(child: AppBar( //barra transparente con icono blanco
               elevation: 0,
               backgroundColor: Colors.transparent,

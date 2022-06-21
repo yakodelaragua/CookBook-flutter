@@ -8,6 +8,7 @@ class LoginPage extends StatefulWidget {
   BuildContext context;
   LoginPage(this.serverController, this.context, {Key? key}) : super(key: key);
 
+  @override
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -17,7 +18,8 @@ class _LoginPageState extends State<LoginPage> {
   String _errorMessage = "";
 
   bool _loading = false;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Form(
@@ -25,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Stack(
           children: <Widget>[
             Container(
-              padding: EdgeInsets.symmetric(vertical: 60),
+              padding: const EdgeInsets.symmetric(vertical: 60),
               width: double.infinity,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -37,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Transform.translate(
-              offset: Offset(0, -40),
+              offset: const Offset(0, -40),
               child: Center(
                 child: Card(
                   elevation: 2,
@@ -63,9 +65,10 @@ class _LoginPageState extends State<LoginPage> {
                               if (value!.isEmpty) {
                                 return "Campo obligatorio";
                               }
+                              return null;
                             },
                           ), //form texto normal
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ), //anadir espacio
                           TextFormField(
@@ -75,8 +78,14 @@ class _LoginPageState extends State<LoginPage> {
                             onSaved: (value) {
                               password = value!;
                             },
+                            validator: (value) {
+                              if(value!.isEmpty) {
+                                return "Campo obligatorio";
+                              }
+                              return null;
+                            },
                           ), //pass
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ),
                           ElevatedButton(
@@ -88,13 +97,13 @@ class _LoginPageState extends State<LoginPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text("Iniciar sesión"),
+                                const Text("Iniciar sesión"),
                                 if (_loading)
                                   Container(
                                     height: 20,
                                     width: 20,
-                                    margin: EdgeInsets.only(left: 20),
-                                    child: CircularProgressIndicator(
+                                    margin: const EdgeInsets.only(left: 20),
+                                    child: const CircularProgressIndicator(
                                       color: Colors.white,
                                     ),
                                   )
@@ -106,20 +115,20 @@ class _LoginPageState extends State<LoginPage> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 _errorMessage,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.red,
                                     fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
                             ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Text("¿No estás registrado?"),
+                              const Text("¿No estás registrado?"),
                               TextButton(
                                 onPressed: () {
                                   _showRegister(context);
