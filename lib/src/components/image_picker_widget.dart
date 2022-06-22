@@ -24,7 +24,7 @@ class ImagePickerWidget extends StatelessWidget {
           ),
           image: imageFile != null
               ? DecorationImage(image: FileImage(imageFile), fit: BoxFit.cover)
-              : null),
+              : null), //si no se cumple devuelve null
       child: IconButton(
         icon: Icon(Icons.camera_alt),
         onPressed: () {

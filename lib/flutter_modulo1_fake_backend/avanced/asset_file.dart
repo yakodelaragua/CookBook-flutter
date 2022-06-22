@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 /*
 * Esta clase ha sido creada para poder cargar un archivo dentro de Asset desde
@@ -21,7 +20,7 @@ class AssetFile implements File {
 
   @override
   Future<Uint8List> readAsBytes() async {
-    final ByteData bytes = await this.assetBundle.load(filePath);
+    final ByteData bytes = await assetBundle.load(filePath);
     return bytes.buffer.asUint8List();
   }
 

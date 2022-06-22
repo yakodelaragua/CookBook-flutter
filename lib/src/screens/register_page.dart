@@ -9,7 +9,12 @@ import '../connection/server_controller.dart';
 class RegisterPage extends StatefulWidget {
   ServerController serverController;
   BuildContext context;
-  RegisterPage(this.serverController, this.context, {Key? key}) : super(key: key);
+
+  //Segun desde donde se abra la pagina de registro
+  User userToEdit;
+
+  RegisterPage(this.serverController, this.context, {Key? key, required this.userToEdit})
+      : super(key: key);
 
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -17,39 +22,53 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   String userName = "";
   String password = "";
+
+  Genrer genrer = Genrer.MALE;
+
+  bool showPassword = false;
   String _errorMessage = "";
+
 
   File imageFile = File("");
   bool _loading = false;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<ScaffoldState> _scaffKey = GlobalKey<ScaffoldState>();
+
+  //Segun desde donde se abra la pagina de registro
+  bool editingUser = false;
+
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Form(
         key: _formKey, //para tener acceso
         child: Stack(
           children: <Widget>[
-            ImagePickerWidget(imageFile: this.imageFile, onImageSelected: (File file) {
-              setState(() {
-                imageFile = file;
-              });
-            },),
-            SizedBox(child: AppBar( //barra transparente con icono blanco
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-
-            ), height: kToolbarHeight + 25,),
-            Transform.translate(
-              offset: Offset(0, -40),
-              child: Center(
-                child: Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  margin: const EdgeInsets.only(
-                      left: 20, right: 20, top: 260, bottom: 20),
-                  child: SingleChildScrollView(
-                    //para solucionar error porque la lista se sale de la view
+            ImagePickerWidget(
+              imageFile: this.imageFile,
+              onImageSelected: (File file) {
+                setState(() {
+                  imageFile = file;
+                });
+              },
+            ),
+            SizedBox(
+              child: AppBar(
+                //barra transparente con icono blanco
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+              ),
+              height: kToolbarHeight + 25,
+            ),
+            Center(
+              child: SingleChildScrollView(
+                child: Transform.translate(
+                  offset: const Offset(0, -40),
+                  child: Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    margin: const EdgeInsets.only(
+                        left: 20, right: 20, top: 260, bottom: 20),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 35, vertical: 20),
@@ -57,8 +76,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           TextFormField(
+                            initialValue: userName,
                             decoration:
-                            const InputDecoration(labelText: "Usuario: "),
+                                const InputDecoration(labelText: "Usuario: "),
                             onSaved: (value) {
                               userName = value!;
                             },
@@ -72,26 +92,93 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: 40,
                           ), //anadir espacio
                           TextFormField(
-                            decoration: const InputDecoration(
-                                labelText: "Contraseña: "),
-                            obscureText: true,
+                            initialValue: password,
+                            decoration: InputDecoration(
+                                labelText: "Contraseña: ",
+                                suffixIcon: IconButton(
+                                  icon: Icon(showPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
+                                  onPressed: () {
+                                    setState(() {
+                                      showPassword = !showPassword;
+                                    });
+                                  },
+                                )),
+                            obscureText: !showPassword,
                             onSaved: (value) {
                               password = value!;
                             },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Campo obligatorio";
+                              }
+                            },
                           ), //pass
                           SizedBox(
-                            height: 40,
+                            height: 20,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  "Género",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[700]),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    RadioListTile(
+                                      title: Text(
+                                        "Masculino",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      value: Genrer.MALE,
+                                      groupValue: genrer,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          genrer = value!;
+                                        });
+                                      },
+                                    ),
+                                    RadioListTile(
+                                      title: Text(
+                                        "Femenino",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      value: Genrer.FEMALE,
+                                      groupValue: genrer,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          genrer = value!;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              _login(context);
+                              _doProcess(context);
                             },
                             style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text("Iniciar sesión"),
+                                Text(editingUser?"Actualizar": "Registrar"),
+                                //Text("Registrar"),
                                 if (_loading)
                                   Container(
                                     height: 20,
@@ -118,21 +205,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           SizedBox(
                             height: 20,
                           ),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text("¿No estás registrado?"),
-                              TextButton(
-                                onPressed: () {
-                                  _showRegister(context);
-                                },
-                                child: Text("Registrarse"),
-                                style: TextButton.styleFrom(
-                                    primary: Theme.of(context).primaryColor),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ),
@@ -146,42 +218,68 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Future<void> _login(BuildContext context) async {
-    if (!_loading) {
-      if (_formKey.currentState!.validate()) {
-        //Siempre en el formulario
-        _formKey.currentState!.save(); //guardar form
-        setState(() {
-          _loading = true;
-          _errorMessage = "";
-        });
+  void _doProcess(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      if (imageFile == null) {
+        showSnackBar(context, "Selecciona una imagen", Colors.orange);
+        return ;
+      }
+      User user = User(nickname: this.userName, password: this.password, genrer: this.genrer, photo: this.imageFile, id: 1);
+      var state;
+      if (editingUser) {
+        user.id = widget.serverController.loggedUser.id;
+        state = await widget.serverController.updateUser(user);
 
-        User? user = await widget.serverController
-            .login(userName, password); //coger usuario del form
-        if (user != null) {
-          //si existe en la base de datos
-          Navigator.of(context).pushReplacementNamed("/home",
-              arguments:
-              user); //mostrar la siguiente pantalla pero no deja volver atras, habria que cerrar sesion
-        } else {
-          //si no existe
-          setState(() {
-            _errorMessage = "Usuario o contraseña incorrecta";
-            _loading = false; //deja de cargar la rueda
-          });
-        }
+      } else {
+        state = await widget.serverController.addUser(user);
+      }
+
+      final action = editingUser?"actualizar":"guardar";
+      final action2 = editingUser?"actualizado":"guardado";
+
+      if (state == false) {
+        showSnackBar(context, "No se pudo $action", Colors.orange);
+      } else {
+        showDialog(context: context, builder: (BuildContext context){
+          return AlertDialog(
+            title: Text("Información"),
+            content: Text("Su usuario ha sido $action2 exitosamente"),
+            actions: <Widget> [
+              TextButton(onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+                  child: Text("Ok")),
+            ],
+          );
+        });
       }
     }
   }
 
-  void _showRegister(BuildContext context) async {
-    Navigator.of(context).pushNamed('/register');
+  void showSnackBar(BuildContext context, String title, Color backcolor) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          title,
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: backcolor,
+      ),
+    );
   }
 
-  @override
   void initState() {
-    //inicializar datos
     super.initState();
-    widget.serverController.init(widget.context);
+    editingUser = (widget.userToEdit != null);
+    if(editingUser) {
+      userName = widget.userToEdit.nickname;
+      password = widget.userToEdit.password;
+      imageFile = widget.userToEdit.photo;
+      genrer = widget.userToEdit.genrer;
+    }
   }
+
+  void _update(BuildContext context) {}
 }

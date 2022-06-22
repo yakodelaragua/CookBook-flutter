@@ -1,7 +1,6 @@
 library flutter_modulo1_fake_backend;
 
 import 'dart:convert';
-import 'dart:html';
 import 'dart:io';
 
 import 'package:factura/flutter_modulo1_fake_backend/data_init.dart';

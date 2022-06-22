@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_modulo1_fake_backend/avanced/asset_file.dart';
 
 import 'avanced/asset_file.dart' as ase;
 import 'recipe.dart';
@@ -125,6 +123,12 @@ void generateData(BuildContext context) {
         nickname: "LuisEnrique",
         password: "luis",
         genrer: Genrer.MALE,
+        photo: ase.AssetFile(assetBundle, "assets/images/usuarios/img20.jpg")),
+    User(
+        id: 19,
+        nickname: "yara",
+        password: "a",
+        genrer: Genrer.FEMALE,
         photo: ase.AssetFile(assetBundle, "assets/images/usuarios/img20.jpg")),
   ];
 
