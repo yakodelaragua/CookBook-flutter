@@ -43,5 +43,14 @@ class ServerController{
   Future<List<Recipe>> getFavoritesList() async {
     return await server.getFavorites();
   }
+  Future<List<Recipe>> getUserRecipeList() async {
+    return await server.getUserRecipes(loggedUser);
+  }
+  Future<Recipe> addRecipe(Recipe nRecipe) async {
+    return await server.addRecipe(nRecipe);
+  }
+
+
+
 
 }

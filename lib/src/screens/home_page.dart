@@ -1,5 +1,6 @@
 import 'package:factura/src/components/recipe_widget.dart';
 import 'package:factura/src/connection/server_controller.dart';
+import 'package:factura/src/screens/add_recipe_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../flutter_modulo1_fake_backend/recipe.dart';
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: (){
-
+          Navigator.of(context).pushNamed("/add_recipe");
         },
       ),
     );

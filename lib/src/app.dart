@@ -1,10 +1,17 @@
+import 'dart:ui';
+
+import 'package:factura/flutter_modulo1_fake_backend/modulo1_fake_backend.dart';
 import 'package:factura/src/connection/server_controller.dart';
+import 'package:factura/src/screens/add_recipe_page.dart';
+import 'package:factura/src/screens/details_page.dart';
 import 'package:factura/src/screens/home_page.dart';
 import 'package:factura/src/screens/login_page.dart';
 import 'package:factura/src/screens/my_favorites_page.dart';
+import 'package:factura/src/screens/my_recipes_page.dart';
 import 'package:factura/src/screens/register_page.dart';
 import 'package:flutter/material.dart';
 
+import '../flutter_modulo1_fake_backend/recipe.dart';
 import '../flutter_modulo1_fake_backend/user.dart';
 
 ServerController _serverController = ServerController();
@@ -40,9 +47,22 @@ class MyApp extends StatelessWidget {
                 userToEdit: loggedUser,
               );
             case "/favorites":
-              User loggedUser = settings.arguments as User;
               return MyFavoritePage(
                 _serverController
+              );
+            case "/my_recipes":
+              return MyRecipesPage(
+                  _serverController
+              );
+            case "/details":
+              Recipe recipe = settings.arguments as Recipe;
+              return DetailsPage(
+                  recipe: recipe,
+                  serverController: _serverController,
+              );
+            case "/add_recipe":
+              return AddRecipePage(
+                serverController: _serverController,
               );
             default:
               return LoginPage(_serverController, context);
