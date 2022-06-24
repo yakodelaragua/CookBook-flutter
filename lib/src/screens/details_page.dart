@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import '../../flutter_modulo1_fake_backend/recipe.dart';
 
 class DetailsPage extends StatefulWidget {
-  final Recipe recipe;
+  Recipe recipe;
   final ServerController serverController;
-  const DetailsPage({Key? key, required this.serverController, required this.recipe}) : super(key: key);
+  DetailsPage({Key? key, required this.serverController, required this.recipe}) : super(key: key);
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
@@ -47,7 +47,15 @@ class _DetailsPageState extends State<DetailsPage> {
                 ],
               ),
               actions: <Widget>[  //botones de la barra de arriba
-                IconButton(onPressed: (){}, icon: Icon(Icons.edit)),
+                if(widget.recipe.user.id == widget.serverController.loggedUser.id)
+                  IconButton(onPressed: () async {
+                    final nRecipe = await Navigator.of(context).pushNamed("/edit_recipe", arguments: widget.recipe);
+                    setState(() {
+                      widget.recipe = nRecipe as Recipe;
+                    });
+                  }, icon: Icon(Icons.edit)),
+
+
                 getFavoriteWidget(),
                 IconButton(onPressed: (){}, icon: Icon(Icons.help)),
 

@@ -49,6 +49,9 @@ class ServerController{
   Future<Recipe> addRecipe(Recipe nRecipe) async {
     return await server.addRecipe(nRecipe);
   }
+  Future<bool> updateRecipe(Recipe nRecipe) async {
+    return await server.updateRecipe(nRecipe);
+  }
 
 
 

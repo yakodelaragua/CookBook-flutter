@@ -28,7 +28,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<String> ingredientsList = [], stepsList = [];
-  final editing = false;
+  bool editing = false;
 
 
   @override
@@ -70,6 +70,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
                   child: ListView(
                     children: <Widget>[
                       TextFormField(
+                        initialValue: name,
                         decoration:
                             InputDecoration(labelText: "Nombre de receta"),
                         onSaved: (value) {
@@ -82,6 +83,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
                         },
                       ),
                       TextFormField(
+                        initialValue: descripcion,
                         decoration: InputDecoration(labelText: "Descripción"),
                         onSaved: (value) {
                           this.descripcion = value!;
@@ -206,10 +208,16 @@ class _AddRecipePageState extends State<AddRecipePage> {
           user: widget.serverController.loggedUser,
           date: DateTime.now(), id: 1);
 
-      final recipe2 = await widget.serverController.addRecipe(recipe);
+      bool saved = false;
+      if(editing){
+        saved = await widget.serverController.updateRecipe(recipe);
+      } else {
+        final recipe2 = await widget.serverController.addRecipe(recipe);
+        saved = recipe2 != null;
+      }
 
-      if (recipe2 != null) {
-        Navigator.pop(context);
+      if (saved) {
+        Navigator.pop(context, recipe);
         showDialog(
             context: context,
             builder: (context) {
@@ -342,7 +350,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
   }
 
   void _onIngredientDelete(int index) {
-    questionDialog(context, "¿Seguro desea eliminar el ingrediente?", () {
+    questionDialog(context, "¿Seguro que quieres eliminar el ingrediente?", () {
       setState(() {
         ingredientsList.removeAt(index);
       });
@@ -384,6 +392,18 @@ class _AddRecipePageState extends State<AddRecipePage> {
             ],
           );
         });
+  }
+
+  void initState(){
+    super.initState();
+    editing = widget.recipe != null;
+    if(editing) {
+      name = widget.recipe!.name;
+      descripcion = widget.recipe!.description;
+      ingredientsList = widget.recipe!.ingredients;
+      stepsList = widget.recipe!.steps;
+      imageFile = widget.recipe!.photo;
+    }
   }
 
 }

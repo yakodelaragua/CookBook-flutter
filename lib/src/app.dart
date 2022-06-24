@@ -64,6 +64,11 @@ class MyApp extends StatelessWidget {
               return AddRecipePage(
                 serverController: _serverController,
               );
+            case "/edit_recipe":
+              Recipe recipe = settings.arguments as Recipe;
+              return AddRecipePage(
+                serverController: _serverController, recipe: recipe,
+              );
             default:
               return LoginPage(_serverController, context);
           }
